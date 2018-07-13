@@ -19,7 +19,8 @@ mutation {
       description
     }
   }
-}```
+}
+```
 
 ## To query all
 ```

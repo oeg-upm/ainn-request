@@ -52,17 +52,6 @@ class CreateResponse(graphene.Mutation):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 class Query(graphene.ObjectType):
     node = Node.Field()
     # all_requests = MongoengineConnectionField(Request)
