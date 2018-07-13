@@ -8,3 +8,42 @@ Request and Answers for Mappings
 4. Install the requirements: run `pip install -r requirements.txt` in the app directory
 5. `python app.py`
 
+
+
+# Examples
+## To add
+```
+mutation {
+  createRequest(description: "test") {
+    request {
+      description
+    }
+  }
+}```
+
+## To query all
+```
+{
+  request{
+    edges{
+      node{
+        description
+      }
+    }
+  }
+}
+```
+
+## To query with filter
+{
+  request(description: "test"){
+    edges{
+      node{
+        id
+        description
+        requestedOn
+      }
+    }
+  }
+}
+

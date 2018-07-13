@@ -33,6 +33,36 @@ class CreateRequest(graphene.Mutation):
         return CreateRequest(request=request)
 
 
+class CreateResponse(graphene.Mutation):
+
+    class Arguments:
+        mapping_url = graphene.String()
+        description = graphene.String()
+        responder_id = graphene.String()
+        status = graphene.String()
+        request = graphene. #graphene.ObjectType(Request) #ReferenceField(Request)
+
+    response = graphene.Field(Request)
+
+    def mutate(self, info, **kwargs):
+        response = ResponseModel(**kwargs)
+        response.save()
+        return CreateRequest(response=response)
+
+
+
+=
+
+
+
+
+
+
+
+
+
+
+
 class Query(graphene.ObjectType):
     node = Node.Field()
     # all_requests = MongoengineConnectionField(Request)
@@ -48,6 +78,7 @@ class Query(graphene.ObjectType):
 
 class Mutation(graphene.ObjectType):
     create_request = CreateRequest.Field()
+    create_response = CreateResponse.Field()
 
 
 schema = graphene.Schema(query=Query, types=[Request, Response], mutation=Mutation)
