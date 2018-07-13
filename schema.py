@@ -40,7 +40,7 @@ class CreateResponse(graphene.Mutation):
         description = graphene.String()
         responder_id = graphene.String()
         status = graphene.String()
-        request = graphene. #graphene.ObjectType(Request) #ReferenceField(Request)
+        request = graphene.Field(Request)
 
     response = graphene.Field(Request)
 
