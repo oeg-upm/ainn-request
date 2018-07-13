@@ -6,7 +6,6 @@ from datetime import datetime
 class Request(Document):
     meta = {'collection': 'request'}
     requester_id = StringField()
-    # requester_email = EmailField()
     dataset_id = StringField()
     description = StringField()
     requested_on = DateTimeField(default=datetime.now)
@@ -15,7 +14,7 @@ class Request(Document):
         ('close', 'Close'),
         ('inprogress', 'In Progress')
     )
-    status = StringField(choices=STATUSES)
+    status = StringField(choices=STATUSES, default='open')
 
 
 class Response(Document):
@@ -28,6 +27,12 @@ class Response(Document):
     request = ReferenceField(Request)
     STATUSES = (
         ('approved', 'Approved'),
-        ('declined', 'Declined')
+        ('declined', 'Declined'),
+        ('new', 'New'),
     )
-    status = StringField(choices=STATUSES)
+    status = StringField(choices=STATUSES, default='new')
+
+
+
+
+
