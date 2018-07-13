@@ -19,7 +19,7 @@ class Request(Document):
 
 class Response(Document):
     meta = {'collection': 'response'}
-    mapping_url = URLField()
+    mapping_url = StringField(default='')
     description = StringField()
     # responder_email = EmailField()
     responder_id = StringField()

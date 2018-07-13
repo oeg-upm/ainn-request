@@ -17,6 +17,11 @@ from mongoengine import connect
 #     #Request.objects.delete()
 
 
+def delete_all():
+    Response.objects.delete()
+    Request.objects.delete()
+
+
 app = Flask(__name__)
 app.debug = True
 
@@ -29,4 +34,5 @@ app.add_url_rule(
 if __name__ == '__main__':
     connect('graphene-mongo-example', alias='default')
     #init_db()
+    #delete_all()
     app.run()
