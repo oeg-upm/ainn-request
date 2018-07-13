@@ -15,7 +15,7 @@ Request and Answers for Mappings
 ## To add
 ```
 mutation {
-  createRequest(description: "test") {
+  createRequest(description: "test1") {
     request {
       description
     }
@@ -37,6 +37,7 @@ mutation {
 ```
 
 ## To query with filter
+```
 {
   request(description: "test"){
     edges{
@@ -48,4 +49,20 @@ mutation {
     }
   }
 }
+```
+
+## To query the first 2 requests
+```
+{
+  request(first: 2){
+    edges{
+      node{
+        id
+        description
+        requestedOn
+      }
+    }
+  }
+}
+```
 
