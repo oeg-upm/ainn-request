@@ -66,3 +66,27 @@ mutation {
 }
 ```
 
+## NEED to BE MODIFIED
+
+{
+  response{
+    edges{
+      node{
+        description
+        id
+        mappingUrl
+
+      }
+    }
+  }
+}
+
+
+mutation {
+  createResponse(geo:{description:"test"}, description:"myres"){
+    response{
+      description
+    }
+  }
+}
+
