@@ -75,18 +75,19 @@ mutation {
         description
         id
         mappingUrl
-
       }
     }
   }
 }
 
-
-mutation {
-  createResponse(geo:{description:"test"}, description:"myres"){
+mutation{
+  createResponse(request:{description:"test"},
+    description:"test", responderId:"test"){
     response{
       description
+      mappingUrl
+      respondedOn
+      responderId
     }
   }
 }
-

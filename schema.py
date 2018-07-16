@@ -6,33 +6,9 @@ from models import Request as RequestModel
 from models import Response as ResponseModel
 
 
-class CreateRequestInput(graphene.InputObjectType):
-    # lat = graphene.Float(required=True)
-    # lng = graphene.Float(required=True)
-
-    requester_id = graphene.String()
-    dataset_id = graphene.String()
-    description = graphene.String()
-
-
-    @property
-    def latlng(self):
-        # return "({},{})".format(self.lat, self.lng)
-        return "({},{},{})".format(self.requester_id, self.dataset_id, self.description)
-
-
-class Address(graphene.ObjectType):
-    latlng = graphene.String()
-
-
-class CreateAddress(graphene.Mutation):
-    class Arguments:
-        geo = CreateRequestInput(required=True)
-
-    Output = Address
-
-    def mutate(self, info, geo):
-        return Address(latlng=geo.latlng)
+##############################
+#           Request          #
+##############################
 
 
 class Request(MongoengineObjectType):
@@ -41,24 +17,12 @@ class Request(MongoengineObjectType):
         interfaces = (Node, )
 
 
-class Response(MongoengineObjectType):
-    class Meta:
-        model = ResponseModel
-        interfaces = (Node,)
-
-
-# class CreateRequestInput(graphene.InputObjectType):
-#     requester_id = graphene.String()
-#     dataset_id = graphene.String()
-#     description = graphene.String()
-
-
 class CreateRequest(graphene.Mutation):
 
     class Arguments:
-        requester_id = graphene.String()
-        dataset_id = graphene.String()
-        description = graphene.String()
+        requester_id = graphene.String(required=True)
+        dataset_id = graphene.String(required=True)
+        description = graphene.String(required=True)
 
     request = graphene.Field(Request)
 
@@ -68,15 +32,32 @@ class CreateRequest(graphene.Mutation):
         return CreateRequest(request=request)
 
 
+################################
+#           Response           #
+################################
+
+
+class Response(MongoengineObjectType):
+    class Meta:
+        model = ResponseModel
+        interfaces = (Node,)
+
+
+class CreateRequestInput(graphene.InputObjectType):
+    requester_id = graphene.String()
+    dataset_id = graphene.String()
+    description = graphene.String()
+
+
 class CreateResponse(graphene.Mutation):
 
     class Arguments:
         mapping_url = graphene.String()
         description = graphene.String()
-        responder_id = graphene.String()
+        responder_id = graphene.String(required=True)
         status = graphene.String()
-        #request = CreateRequestInput(required=True)
-        geo = CreateRequestInput(required=True)
+        request = CreateRequestInput(required=True)
+        #geo = CreateRequestInput(required=True)
 
     response = graphene.Field(Response)
     #Output = Response
@@ -91,16 +72,28 @@ class CreateResponse(graphene.Mutation):
     #     response = ResponseModel(**kwargs)
     #     response.save()
     #     return CreateResponse(response=response)
+
+    # def mutate(self, info, **kwargs):
+    #     print 'mutate'
+    #     print 'kwargs request: '
+    #     print kwargs['geo']
+    #     req_kw = kwargs['geo']
+    #     request_instance = RequestModel.objects.get(**req_kw)
+    #     print 'request instance: '
+    #     print request_instance
+    #     kwargs['request'] = request_instance
+    #     del kwargs['geo']
+    #     new_response_instance = ResponseModel(**kwargs)
+    #     print 'new response instance: '
+    #     print new_response_instance
+    #     new_response_instance.save()
+    #     return CreateResponse(response=new_response_instance)
+
     def mutate(self, info, **kwargs):
-        print 'mutate'
-        print 'kwargs request: '
-        print kwargs['geo']
-        req_kw = kwargs['geo']
+        req_kw = kwargs['request']
         request_instance = RequestModel.objects.get(**req_kw)
-        print 'request instance: '
-        print request_instance
         kwargs['request'] = request_instance
-        del kwargs['geo']
+        del kwargs['request']
         new_response_instance = ResponseModel(**kwargs)
         print 'new response instance: '
         print new_response_instance
@@ -110,29 +103,13 @@ class CreateResponse(graphene.Mutation):
 
 class Query(graphene.ObjectType):
     node = Node.Field()
-    # all_requests = MongoengineConnectionField(Request)
-    # all_responses = MongoengineConnectionField(Response)
     request = MongoengineConnectionField(Request)
-    #request = graphene.Field(Request)
     response = MongoengineConnectionField(Response)
-    # hello = graphene.String(description='A typical hello world')
-    #
-    # def resolve_hello(self, info):
-    #     return 'World'
-    address = graphene.Field(Address, geo=CreateRequestInput(required=True))
-
-    def resolve_address(self, info, geo):
-        return Address(latlng=geo.latlng)
-
-    # def resolve_response(self, info, request):
-    #     return Response(request=request)
-
 
 
 class Mutation(graphene.ObjectType):
     create_request = CreateRequest.Field()
     create_response = CreateResponse.Field()
-    create_address = CreateAddress.Field()
 
 
 schema = graphene.Schema(query=Query, types=[Request, Response], mutation=Mutation)
