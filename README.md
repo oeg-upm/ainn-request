@@ -7,6 +7,8 @@ Request and Answers for Mappings
 3. Access the environment variable
 4. Install the requirements: run `pip install -r requirements.txt` in the app directory
 5. `python app.py`
+6. Access http://localhost:5000/graphql on your browser
+
 
 
 
@@ -15,7 +17,11 @@ Request and Answers for Mappings
 ## To add
 ```
 mutation {
-  createRequest(description: "test1") {
+  createRequest(
+    requesterId: "requester1"
+    , datasetId: "dataset1"
+    , description: "test description 2"
+  ) {
     request {
       description
     }
