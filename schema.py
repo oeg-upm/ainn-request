@@ -14,7 +14,6 @@ from models import Response as ResponseModel
 class Request(MongoengineObjectType):
     class Meta:
         model = RequestModel
-        interfaces = (Node, )
 
 
 class CreateRequest(graphene.Mutation):
@@ -40,10 +39,10 @@ class CreateRequest(graphene.Mutation):
 class Response(MongoengineObjectType):
     class Meta:
         model = ResponseModel
-        interfaces = (Node,)
 
 
 class CreateRequestInput(graphene.InputObjectType):
+    id = graphene.String()
     requester_id = graphene.String()
     dataset_id = graphene.String()
     description = graphene.String()
@@ -90,11 +89,16 @@ class CreateResponse(graphene.Mutation):
     #     return CreateResponse(response=new_response_instance)
 
     def mutate(self, info, **kwargs):
+        print "getting request info: "
         req_kw = kwargs['request']
+        print req_kw
         request_instance = RequestModel.objects.get(**req_kw)
-        kwargs['request'] = request_instance
+        print "request instance: "
+        print request_instance.id
+        #kwargs['request'] = request_instance
         del kwargs['request']
         new_response_instance = ResponseModel(**kwargs)
+        new_response_instance.request = request_instance
         print 'new response instance: '
         print new_response_instance
         new_response_instance.save()
@@ -102,9 +106,20 @@ class CreateResponse(graphene.Mutation):
 
 
 class Query(graphene.ObjectType):
-    node = Node.Field()
-    request = MongoengineConnectionField(Request)
-    response = MongoengineConnectionField(Response)
+    #node = Node.Field()
+    # request = MongoengineConnectionField(Request)
+    # response = MongoengineConnectionField(Response)
+
+    request = graphene.List(Request, id=graphene.String(), requester_id=graphene.String(), dataset_id=graphene.String(), status=graphene.String())
+    response = graphene.List(Response, responder_id=graphene.String(), status=graphene.String(), request=CreateRequestInput())
+
+    def resolve_request(self, info, **kwargs):
+        return list(RequestModel.objects.filter(**kwargs))
+
+    def resolve_response(self, info, **kwargs):
+        print "kwargs: "
+        print kwargs
+        return list(ResponseModel.objects.filter(**kwargs))
 
 
 class Mutation(graphene.ObjectType):
@@ -112,4 +127,5 @@ class Mutation(graphene.ObjectType):
     create_response = CreateResponse.Field()
 
 
-schema = graphene.Schema(query=Query, types=[Request, Response], mutation=Mutation)
+schema = graphene.Schema(query=Query, mutation=Mutation)
+# schema = graphene.Schema(query=Query, types=[Request, Response], mutation=Mutation)
